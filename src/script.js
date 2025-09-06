@@ -10,7 +10,13 @@ const parameters = {
   materialColor: '#ffeded',
 };
 
-gui.addColor(parameters, 'materialColor');
+gui.addColor(parameters, 'materialColor').onChange(() => {
+  material.color.set(parameters.materialColor);
+});
+
+// Textures
+const textureLoader = new THREE.TextureLoader();
+const gradientTexture = textureLoader.load('/textures/gradients/3.jpg');
 
 /**
  * Base
@@ -21,21 +27,29 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 
+// Material
+const material = new THREE.MeshToonMaterial({
+  color: parameters.materialColor,
+});
+
 //Geometries
 const torusGeometry = new THREE.TorusGeometry(1, 0.4, 16, 60);
-const torusMaterial = new THREE.MeshBasicMaterial({ color: '#ff0000' });
-const torusMesh = new THREE.Mesh(torusGeometry, torusMaterial);
-scene.add(torusMesh);
+
+const torusMesh = new THREE.Mesh(torusGeometry, material);
 
 const coneGeometry = new THREE.ConeGeometry(1, 2, 32);
-const coneMaterial = new THREE.MeshBasicMaterial({ color: '#ff0000' });
-const coneMesh = new THREE.Mesh(coneGeometry, coneMaterial);
-scene.add(coneMesh);
+
+const coneMesh = new THREE.Mesh(coneGeometry, material);
 
 const torusKnotGeometry = new THREE.TorusKnotGeometry(0.8, 0.35, 100, 162);
-const torusKnotMaterial = new THREE.MeshBasicMaterial({ color: '#ff0000' });
-const torusKnotsMesh = new THREE.Mesh(torusKnotGeometry, torusKnotMaterial);
-scene.add(torusKnotsMesh);
+
+const torusKnotsMesh = new THREE.Mesh(torusKnotGeometry, material);
+scene.add(torusMesh, coneMesh, torusKnotsMesh);
+
+// Lights
+const directionalLight = new THREE.DirectionalLight('#ffffff', 3);
+directionalLight.position.set(1, 1, 0);
+scene.add(directionalLight);
 
 /**
  * Sizes
