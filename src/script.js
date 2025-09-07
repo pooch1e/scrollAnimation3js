@@ -8,7 +8,10 @@ const gui = new GUI();
 
 const parameters = {
   materialColor: '#ffeded',
+  objectsDistance: 4,
 };
+
+let scrollY = window.scrollY;
 
 gui.addColor(parameters, 'materialColor').onChange(() => {
   material.color.set(parameters.materialColor);
@@ -16,7 +19,8 @@ gui.addColor(parameters, 'materialColor').onChange(() => {
 
 // Textures
 const textureLoader = new THREE.TextureLoader();
-const gradientTexture = textureLoader.load('/textures/gradients/3.jpg');
+const gradientTexture = textureLoader.load('/textures/gradients/5.jpg');
+gradientTexture.magFilter = THREE.NearestFilter;
 
 /**
  * Base
@@ -30,6 +34,7 @@ const scene = new THREE.Scene();
 // Material
 const material = new THREE.MeshToonMaterial({
   color: parameters.materialColor,
+  gradientMap: gradientTexture,
 });
 
 //Geometries
@@ -45,6 +50,12 @@ const torusKnotGeometry = new THREE.TorusKnotGeometry(0.8, 0.35, 100, 162);
 
 const torusKnotsMesh = new THREE.Mesh(torusKnotGeometry, material);
 scene.add(torusMesh, coneMesh, torusKnotsMesh);
+
+torusMesh.position.y = parameters.objectsDistance * 0;
+coneMesh.position.y = parameters.objectsDistance * 1;
+torusKnotsMesh.position.y = parameters.objectsDistance * 2;
+
+const sectionMeshes = [torusMesh, coneMesh, torusKnotsMesh];
 
 // Lights
 const directionalLight = new THREE.DirectionalLight('#ffffff', 3);
@@ -103,6 +114,15 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  for (let object in sectionMeshes) {
+    sectionMeshes[object].rotation.x = elapsedTime * 0.1;
+    sectionMeshes[object].rotation.y = elapsedTime * 0.12;
+  }
+
+  scrollY = window.scrollY;
+
+  camera.position.z = scrollY;
 
   // Render
   renderer.render(scene, camera);
