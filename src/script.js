@@ -52,8 +52,12 @@ const torusKnotsMesh = new THREE.Mesh(torusKnotGeometry, material);
 scene.add(torusMesh, coneMesh, torusKnotsMesh);
 
 torusMesh.position.y = parameters.objectsDistance * 0;
-coneMesh.position.y = parameters.objectsDistance * 1;
-torusKnotsMesh.position.y = parameters.objectsDistance * 2;
+coneMesh.position.y = parameters.objectsDistance * -1;
+torusKnotsMesh.position.y = parameters.objectsDistance * -2;
+
+torusMesh.position.x = 2;
+coneMesh.position.x = -2;
+torusKnotsMesh.position.x = 2;
 
 const sectionMeshes = [torusMesh, coneMesh, torusKnotsMesh];
 
@@ -122,7 +126,7 @@ const tick = () => {
 
   scrollY = window.scrollY;
 
-  camera.position.z = scrollY;
+  camera.position.y = (-scrollY / sizes.height) * parameters.objectsDistance;
 
   // Render
   renderer.render(scene, camera);
