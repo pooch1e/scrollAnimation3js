@@ -11,6 +11,16 @@ const parameters = {
   objectsDistance: 4,
 };
 
+const cursorPosition = {
+  mouseX: 0,
+  mouseY: 0,
+};
+
+window.addEventListener('mousemove', (e) => {
+  cursorPosition.mouseX = e.clientX / sizes.width - 0.5;
+  cursorPosition.mouseY = -e.clientY / sizes.height - 0.5;
+});
+
 let scrollY = window.scrollY;
 
 gui.addColor(parameters, 'materialColor').onChange(() => {
@@ -91,6 +101,9 @@ window.addEventListener('resize', () => {
 /**
  * Camera
  */
+//Camera Group
+const cameraGroup = new THREE.Group();
+
 // Base camera
 const camera = new THREE.PerspectiveCamera(
   35,
@@ -99,7 +112,8 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 camera.position.z = 6;
-scene.add(camera);
+cameraGroup.add(camera);
+scene.add(cameraGroup);
 
 /**
  * Renderer
@@ -123,6 +137,13 @@ const tick = () => {
     sectionMeshes[object].rotation.x = elapsedTime * 0.1;
     sectionMeshes[object].rotation.y = elapsedTime * 0.12;
   }
+
+  //parralax
+  const parralaxX = cursorPosition.mouseX;
+  const parralaxY = -cursorPosition.mouseY;
+
+  cameraGroup.position.x = parralaxX;
+  cameraGroup.position.y = parralaxY;
 
   scrollY = window.scrollY;
 
