@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import GUI from 'lil-gui';
+import gsap from 'gsap';
 
 /**
  * Debug
@@ -20,8 +21,26 @@ window.addEventListener('mousemove', (e) => {
   cursorPosition.mouseX = e.clientX / sizes.width - 0.5;
   cursorPosition.mouseY = -e.clientY / sizes.height - 0.5;
 });
-
+// SCROLL
 let scrollY = window.scrollY;
+let currentSection = 0;
+
+window.addEventListener('scroll', () => {
+  scrollY = window.scrollY;
+
+  const newSection = Math.round(scrollY / sizes.height);
+  if (newSection != currentSection) {
+    currentSection = newSection;
+
+    gsap.to(sectionMeshes[currentSection].rotation, {
+      duration: 1.5,
+      ease: 'power2.inOut',
+      x: '+=6',
+      y: '+=3',
+      z: '+=1.5',
+    });
+  }
+});
 
 gui.addColor(parameters, 'materialColor').onChange(() => {
   material.color.set(parameters.materialColor);
@@ -77,7 +96,8 @@ const positions = new Float32Array(particlesCount * 3);
 
 for (let i = 0; i < particlesCount; i++) {
   positions[i * 3 + 0] = (Math.random() - 0.5) * 10;
-  positions[i * 3 + 1] = Math.random();
+  positions[i * 3 + 1] =
+    Math.random() * parameters.objectsDistance * sectionMeshes.length;
   positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
 }
 const particlesGeometry = new THREE.BufferGeometry();
@@ -156,6 +176,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Animate
  */
+
 const clock = new THREE.Clock();
 let prevTime = 0;
 
@@ -165,8 +186,8 @@ const tick = () => {
   prevTime = elapsedTime;
 
   for (let object in sectionMeshes) {
-    sectionMeshes[object].rotation.x = elapsedTime * 0.1;
-    sectionMeshes[object].rotation.y = elapsedTime * 0.12;
+    sectionMeshes[object].rotation.x += deltaTime * 0.1;
+    sectionMeshes[object].rotation.y += deltaTime * 0.12;
   }
 
   //parralax
@@ -179,8 +200,6 @@ const tick = () => {
     (parralaxY - cameraGroup.position.y) * 0.5 * deltaTime;
 
   // lerp to destination
-
-  scrollY = window.scrollY;
 
   camera.position.y = (-scrollY / sizes.height) * parameters.objectsDistance;
 
