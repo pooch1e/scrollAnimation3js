@@ -129,9 +129,12 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  * Animate
  */
 const clock = new THREE.Clock();
+let prevTime = 0;
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+  let deltaTime = elapsedTime - prevTime;
+  prevTime = elapsedTime;
 
   for (let object in sectionMeshes) {
     sectionMeshes[object].rotation.x = elapsedTime * 0.1;
@@ -142,8 +145,12 @@ const tick = () => {
   const parralaxX = cursorPosition.mouseX;
   const parralaxY = -cursorPosition.mouseY;
 
-  cameraGroup.position.x = parralaxX;
-  cameraGroup.position.y = parralaxY;
+  cameraGroup.position.x +=
+    (parralaxX - cameraGroup.position.x) * 0.5 * deltaTime;
+  cameraGroup.position.y +=
+    (parralaxY - cameraGroup.position.y) * 0.5 * deltaTime;
+
+  // lerp to destination
 
   scrollY = window.scrollY;
 
