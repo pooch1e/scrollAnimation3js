@@ -45,6 +45,12 @@ window.addEventListener('scroll', () => {
 gui.addColor(parameters, 'materialColor').onChange(() => {
   material.color.set(parameters.materialColor);
 });
+gui
+  .addColor(particlesMaterial, 'size')
+  .min(0.1)
+  .max(1)
+  .step(0.01)
+  .onFinishChange();
 
 // Textures
 const textureLoader = new THREE.TextureLoader();
